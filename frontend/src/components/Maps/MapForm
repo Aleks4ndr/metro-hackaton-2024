@@ -1,0 +1,35 @@
+import React from 'react';
+import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import MapComponent from './MapComponent';
+import SearchForm from './SearchForm';
+import { getObjects, addObject } from './../../utils';
+
+const queryClient = new QueryClient();
+
+const App: React.FC = () => {
+  const { data = [], refetch } = useQuery(['objects'], getObjects);
+  const mutation = useMutation(addObject, {
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handleMapClick = (latlng: { lat: number, lng: number }) => {
+    const newObject = { lat: latlng.lat, lng: latlng.lng, name: 'New Object', description: 'Description' };
+    mutation.mutate(newObject);
+  };
+
+  const handleSearch = (conditions: any) => {
+    console.log('Search conditions:', conditions);
+    // Implement search logic
+  };
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SearchForm onSearch={handleSearch} />
+      <MapComponent data={data} onMapClick={handleMapClick} />
+    </QueryClientProvider>
+  );
+};
+
+export default App;

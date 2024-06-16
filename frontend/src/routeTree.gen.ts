@@ -17,8 +17,10 @@ import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
+import { Route as LayoutMapImport } from './routes/_layout/map'
 import { Route as LayoutItemsImport } from './routes/_layout/items'
 import { Route as LayoutAdminImport } from './routes/_layout/admin'
+import { Route as LayoutDetailsGidImport } from './routes/_layout/details/$gid'
 
 // Create/Update Routes
 
@@ -52,6 +54,11 @@ const LayoutSettingsRoute = LayoutSettingsImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutMapRoute = LayoutMapImport.update({
+  path: '/map',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutItemsRoute = LayoutItemsImport.update({
   path: '/items',
   getParentRoute: () => LayoutRoute,
@@ -59,6 +66,11 @@ const LayoutItemsRoute = LayoutItemsImport.update({
 
 const LayoutAdminRoute = LayoutAdminImport.update({
   path: '/admin',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutDetailsGidRoute = LayoutDetailsGidImport.update({
+  path: '/details/$gid',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -90,12 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutItemsImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/map': {
+      preLoaderRoute: typeof LayoutMapImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/settings': {
       preLoaderRoute: typeof LayoutSettingsImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/': {
       preLoaderRoute: typeof LayoutIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/details/$gid': {
+      preLoaderRoute: typeof LayoutDetailsGidImport
       parentRoute: typeof LayoutImport
     }
   }
@@ -107,8 +127,10 @@ export const routeTree = rootRoute.addChildren([
   LayoutRoute.addChildren([
     LayoutAdminRoute,
     LayoutItemsRoute,
+    LayoutMapRoute,
     LayoutSettingsRoute,
     LayoutIndexRoute,
+    LayoutDetailsGidRoute,
   ]),
   LoginRoute,
   RecoverPasswordRoute,

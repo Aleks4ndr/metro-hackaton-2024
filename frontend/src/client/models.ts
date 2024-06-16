@@ -130,3 +130,24 @@ export type ValidationError = {
 	type: string;
 };
 
+export type ZuPublic = {
+
+	gid: number;
+	cadastra2: string;
+	address: string;
+	hasvalid5: string;
+	hascadas6: string;
+	isdraft: string;
+	ownershi8: string;
+	is_stroy: string;
+	area: string;
+	geom: string;
+	is_nonca20: string;
+
+};
+
+export type ZusPublic = {
+	items: Array<ZuPublic>,
+	page: number,
+	has_more: boolean,
+}

@@ -40,3 +40,86 @@ export const confirmPasswordRules = (
 
   return rules;
 }
+
+// utils/ewktToGeoJSON.ts
+import { wktToGeoJSON } from '@terraformer/wkt';
+import { Feature, Geometry, FeatureCollection } from 'geojson';
+
+export const ewktToGeoJSON = (ewkt: string): Feature => {
+  const wktWithoutSrid = ewkt.replace(/SRID=\d+;/, ''); // Remove the SRID part if present
+  const geojsonFeature = wktToGeoJSON(wktWithoutSrid) as Feature;
+
+  return {
+    type: 'Feature',
+    geometry: geojsonFeature.geometry as Geometry,
+    properties: {}
+  };
+};
+
+
+export const convertFeatures = (data: any[]): FeatureCollection => {
+  return {
+    type: 'FeatureCollection',
+    features: data.map(item => ({
+      ...ewkbToGeoJSON(item.geom),
+      properties: {
+        gid: item.gid,
+        cadastra: item.cadastra2,
+        address: item.address,
+        ownership: item.ownershi8,
+        area: item.area,
+        // Add other properties as needed
+      },
+    })),
+  };
+};
+
+// import { Feature, Geometry } from 'geojson';
+import wkx from 'wkx';
+
+// Function to convert EWKB to GeoJSON
+export const ewkbToGeoJSON = (ewkb: string): Feature => {
+  // Decode the EWKB string to a Buffer
+  const ewkbBuffer = Buffer.from(ewkb, 'hex');
+  
+  // Parse the EWKB buffer to a geometry object
+  const geometry = wkx.Geometry.parse(ewkbBuffer);
+  
+  // Convert the geometry object to GeoJSON
+  const geojson = geometry.toGeoJSON();
+
+  return {
+    type: 'Feature',
+    geometry: geojson as Geometry,
+    properties: {},
+  };
+};
+
+export const swapCoordinates = (geojson: any) => {
+  if (geojson.type === 'FeatureCollection') {
+    geojson.features = geojson.features.map((feature: any) => {
+      feature.geometry = swapCoordinatesInGeometry(feature.geometry);
+      return feature;
+    });
+  } else if (geojson.type === 'Feature') {
+    geojson.geometry = swapCoordinatesInGeometry(geojson.geometry);
+  }
+  return geojson;
+};
+
+const swapCoordinatesInGeometry = (geometry: any) => {
+  if (geometry.type === 'Point') {
+    geometry.coordinates = swapCoordinatesInArray(geometry.coordinates);
+  } else if (geometry.type === 'LineString' || geometry.type === 'MultiPoint') {
+    geometry.coordinates = geometry.coordinates.map(swapCoordinatesInArray);
+  } else if (geometry.type === 'Polygon' || geometry.type === 'MultiLineString') {
+    geometry.coordinates = geometry.coordinates.map((ring: any) => ring.map(swapCoordinatesInArray));
+  } else if (geometry.type === 'MultiPolygon') {
+    geometry.coordinates = geometry.coordinates.map((polygon: any) =>
+      polygon.map((ring: any) => ring.map(swapCoordinatesInArray))
+    );
+  }
+  return geometry;
+};
+
+const swapCoordinatesInArray = (coords: number[]) => [coords[1], coords[0]];
