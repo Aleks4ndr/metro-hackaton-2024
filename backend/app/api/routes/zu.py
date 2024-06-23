@@ -1,4 +1,4 @@
-from typing import Any, Annotated, List
+from typing import Any, Annotated, List, Union
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import func, select, text
@@ -19,9 +19,9 @@ def read_zu(
     areaTo: float | None = None,
     rectangleWidth: float | None = None,
     rectangleHeight: float | None = None,
-    vri: Annotated[List[str] | None, Query()] = None,
-    okrug: Annotated[List[int] | None, Query()] = None,
-    rayon: Annotated[List[int] | None, Query()] = None,
+    vri: Annotated[List[str], Query()] = None,
+    okrug: Annotated[List[int], Query()] = None,
+    rayon: Annotated[List[int], Query()] = None,
     offset: int = 0,
     limit: int = 100
     # current_user: CurrentUser, 
