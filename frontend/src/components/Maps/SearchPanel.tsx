@@ -1,95 +1,102 @@
-import React, { useState } from 'react';
-import {
-    Box,
-    Button,
-    VStack,
-    FormControl,
-    FormLabel,
-    Input,
-    NumberInput,
-    NumberInputField,
-    Container,
-    Heading,
-    HStack,
-} from '@chakra-ui/react';
-import MultiSelectDropdown from './MultiSelectDropdown2.tsx'; // Импортируем компонент
+import React from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { Box, Button, HStack, VStack, FormControl, FormLabel, NumberInput, NumberInputField } from '@chakra-ui/react';
+
+interface SearchFormValues {
+    searchTerm: string;
+    categories: { value: string, label: string }[];
+}
+
+interface SearchPanelProps {
+    onSearch: (data: SearchFormValues) => void;
+}
+
+import MultiSelectDropdown from './MultiselectDropdown3.tsx';
 
 import rayonOptions from './RAYON.ts';
 import districtOptions from './DISTRICT.ts';
 import vriOptions from './VRI.ts';
 import { ZuPublic, ZuService } from "../../client";
 
-type SearchPanelProps = {
-    onSearch: ((data: ZuPublic[]) => void);
-}
+// type SearchPanelProps = {
+//     onSearch: ((data: ZuPublic[]) => void);
+// }
 
 const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps) => {
-    const [formValues, setFormValues] = useState({
-        areaFrom: '',
-        areaTo: '',
-        districts: [] as number[],
-        rayon: [] as number[],
-        vri: [] as string[],
-        regions: [] as string[],
-        usageTypes: [] as string[],
-        ownership: '',
-        ZPO: [] as string[],
-        density: '',
-        height: '',
-        buildPercent: '',
-        inPMT: false,
-        inOOZT: false,
-        inPPT: false,
-        KRT: [] as string[],
-        usageKinds: [] as string[],
-        minWidth: '',
-        minLength: '',
-    });
+    // const [formValues, setFormValues] = useState({
+    //     areaFrom: '',
+    //     areaTo: '',
+    //     districts: [] as number[],
+    //     rayon: [] as number[],
+    //     vri: [] as string[],
+    //     regions: [] as string[],
+    //     usageTypes: [] as string[],
+    //     ownership: '',
+    //     ZPO: [] as string[],
+    //     density: '',
+    //     height: '',
+    //     buildPercent: '',
+    //     inPMT: false,
+    //     inOOZT: false,
+    //     inPPT: false,
+    //     KRT: [] as string[],
+    //     usageKinds: [] as string[],
+    //     minWidth: '',
+    //     minLength: '',
+    // });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type, checked } = e.target;
-        const val = type === 'checkbox' ? checked : value;
-        setFormValues((prevValues) => ({
-            ...prevValues,
-            [name]: val,
-        }));
+    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    //     const { name, value, type, checked } = e.target;
+    //     const val = type === 'checkbox' ? checked : value;
+    //     setFormValues((prevValues) => ({
+    //         ...prevValues,
+    //         [name]: val,
+    //     }));
+    // };
+
+    // const handleMultiSelectChange = (key: string, values: string[]) => {
+    //     setFormValues((prevValues) => ({
+    //         ...prevValues,
+    //         [key]: values,
+    //     }));
+    // };
+
+    const methods = useForm<SearchFormValues>();
+    const { handleSubmit, register, formState } = methods;
+
+    const onSubmit = (data: SearchFormValues) => {
+        onSearch(data);
     };
 
-    const handleMultiSelectChange = (key: string, values: string[]) => {
-        setFormValues((prevValues) => ({
-            ...prevValues,
-            [key]: values,
-        }));
-    };
+    // const  handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     console.log('Search parameters:', formValues);
 
-    const  handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Search parameters:', formValues);
-
-        const data = await ZuService.readItems();
-        onSearch(data.items);
+    //     const data = await ZuService.readItems();
+    //     onSearch(data.items);
 
 
 
-    };
+    // };
 
     return (
-        // <Container width="100%" maxW="container.xl" p={4}>
-            <HStack width="100%" spacing={4} align="center">
+        <FormProvider {...methods}>
+            <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+            <VStack width="100%" spacing={4} align="center">
                 {/* <Heading size="lg" textAlign={{ base: "center", md: "left" }} pt={12}>
                     Панель поиска
                 </Heading> */}
                 <Box p={4} bg="gray.100" borderRadius="md" as="form" onSubmit={handleSubmit}>
-                    <HStack spacing={4} align="stretch">
+                    <VStack spacing={4} align="stretch">
                         <FormControl id="areaFrom">
                             <FormLabel>Площадь от</FormLabel>
-                            <NumberInput min={0} value={formValues.areaFrom} onChange={(valueString) => setFormValues({ ...formValues, areaFrom: valueString })}>
+                            <NumberInput min={0} {...register('areaFrom')}>
                                 <NumberInputField name="areaFrom" />
                             </NumberInput>
                         </FormControl>
                         <FormControl id="areaTo">
                             <FormLabel>Площадь до</FormLabel>
-                            <NumberInput min={0} value={formValues.areaTo} onChange={(valueString) => setFormValues({ ...formValues, areaTo: valueString })}>
+                            <NumberInput min={0} {...register('areaTo')}>
                                 <NumberInputField name="areaTo" />
                             </NumberInput>
                         </FormControl>
@@ -97,9 +104,10 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                             {/* <FormLabel>Округ</FormLabel> */}
                             <MultiSelectDropdown
                                 label="Округ"
+                                name="districts"
                                 options={districtOptions}
-                                selectedOptions={formValues.districts}
-                                onChange={(values) => handleMultiSelectChange('districts', values)}
+                                // selectedOptions={formValues.districts}
+                                // onChange={(values) => handleMultiSelectChange('districts', values)}
                             />
                         </FormControl>
 
@@ -107,9 +115,10 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                             {/* <FormLabel>Округ</FormLabel> */}
                             <MultiSelectDropdown
                                 label="Район"
+                                name="rayon"
                                 options={rayonOptions}
-                                selectedOptions={formValues.rayon}
-                                onChange={(values) => handleMultiSelectChange('rayon', values)}
+                                // selectedOptions={formValues.rayon}
+                                // onChange={(values) => handleMultiSelectChange('rayon', values)}
                             />
                         </FormControl>
 
@@ -117,21 +126,22 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                             {/* <FormLabel>Округ</FormLabel> */}
                             <MultiSelectDropdown
                                 label="ВРИ"
+                                name="vri"
                                 options={vriOptions}
-                                selectedOptions={formValues.vri}
-                                onChange={(values) => handleMultiSelectChange('vri', values)}
+                                // selectedOptions={formValues.vri}
+                                // onChange={(values) => handleMultiSelectChange('vri', values)}
                             />
                         </FormControl>
 
                         <FormControl id="perimeterToArea">
                             <FormLabel>Мин. ширина:</FormLabel>
-                            <NumberInput min={0} value={formValues.minWidth} onChange={(valueString) => setFormValues({ ...formValues, minWidth: valueString })}>
+                            <NumberInput min={0} {...register('perimeterToArea')}>
                                 <NumberInputField name="perimeterToArea" />
                             </NumberInput>
                         </FormControl>
                         <FormControl id="innerCircleRadius">
                             <FormLabel>Мин. длина:</FormLabel>
-                            <NumberInput min={0} value={formValues.minLength} onChange={(valueString) => setFormValues({ ...formValues, minLength: valueString })}>
+                            <NumberInput min={0} {...register('innerCircleRadius')}>
                                 <NumberInputField name="innerCircleRadius" />
                             </NumberInput>
                         </FormControl>
@@ -139,10 +149,11 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                         <Button width="100%" margin="10px" padding="10px" type="submit" colorScheme="blue">
                             Поиск
                         </Button>
-                    </HStack>
+                    </VStack>
                 </Box>
-            </HStack>
-        // </Container>
+            </VStack>
+        </Box>
+        </FormProvider>
     );
 };
 

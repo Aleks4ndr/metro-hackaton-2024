@@ -227,7 +227,7 @@ T = TypeVar("T")
 
 # Define the generic response model
 class PagedResponse(GenericModel, Generic[T]):
-    page: int
+    # page: int
     items: List[T]
     has_more: bool
 
@@ -536,16 +536,16 @@ class ZuDetails(SQLModel):
     zu: Zu
     okrug: List[Okrug]
     mkd: List[Mkd]
-    oozt: List[Oozt]
-    pp_metro_allkrug: List[Pp_metro_all]
-    ppt_all: List[Ppt_all]
-    ppt_uds: List[Ppt_uds]
-    spritzones: List[SpritZones]
-    oks: List[Oks]
-    tpz_new: List[Tpz_new]
-    uchastrki_megevania: List[Uchastrki_megevania]
-    uds_bridges: List[Uds_bridges]
-    uds_roads: List[Uds_roads]
+    # oozt: List[Oozt]
+    # pp_metro_allkrug: List[Pp_metro_all]
+    # ppt_all: List[Ppt_all]
+    # ppt_uds: List[Ppt_uds]
+    # spritzones: List[SpritZones]
+    # oks: List[Oks]
+    # tpz_new: List[Tpz_new]
+    # uchastrki_megevania: List[Uchastrki_megevania]
+    # uds_bridges: List[Uds_bridges]
+    # uds_roads: List[Uds_roads]
 
     
     

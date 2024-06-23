@@ -91,22 +91,24 @@ function Page() {
     // Implement search logic here, e.g., API call to fetch filtered data
   };
 
-  const toggleView = () => {
-    setView((prevView) => (prevView === 'map' ? 'list' : 'map'));
-  };
+  // const toggleView = () => {
+  //   setView((prevView) => (prevView === 'map' ? 'list' : 'map'));
+  // };
 
   return (
 
-    <VStack width="100%" spacing={4}>
-      <Flex width="100%" justify="space-between" align="center">
-        <SearchForm onSearch={handleSearch} />
-        <Button onClick={toggleView} mb={4}>
+    <HStack width="100%" spacing={4}>
+      {/* <Flex width="100%" justify="space-between" align="center"> */}
+        <Box  width="20%">
+        <SearchForm  onSearch={handleSearch} />
+        </Box>
+        {/* <Button onClick={toggleView} mb={4}>
           {view === 'map' ? 'Switch to List View' : 'Switch to Map View'}
-        </Button>
-      </Flex>
+        </Button> */}
+      {/* </Flex> */}
       <Box position="relative" width="100%" height="100%">
         {view === 'map' ? <Map mapData={mapData} /> : <p>List</p>}
       </Box>
-    </VStack>
+    </HStack>
   )
 }
