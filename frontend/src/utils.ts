@@ -63,16 +63,18 @@ export const convertFeatures = (data: any[]): FeatureCollection => {
     features: data.map(item => ({
       ...ewkbToGeoJSON(item.geom),
       properties: {
-        gid: item.gid,
-        cadastra: item.cadastra2,
-        address: item.address,
-        ownership: item.ownershi8,
-        area: item.area,
+        ...item,
+        // gid: item.gid,
+        // cadastra: item.cadastra2,
+        // address: item.address,
+        // ownership: item.ownershi8,
+        // area: item.area,
         // Add other properties as needed
       },
     })),
   };
 };
+
 
 // import { Feature, Geometry } from 'geojson';
 import wkx from 'wkx';

@@ -11,6 +11,20 @@ from sqlalchemy.orm.base import Mapped
 from sqlalchemy.sql.sqltypes import NullType
 from datetime import datetime
 
+from typing import Generic, TypeVar, List, Optional
+from pydantic.generics import GenericModel
+from fastapi import FastAPI, Depends
+from sqlmodel import SQLModel, Field, Session, create_engine, select
+
+# Define a type variable for the generic model
+T = TypeVar("T")
+
+# Define the generic response model
+class PagedResponse(GenericModel, Generic[T]):
+    # page: int
+    items: List[T]
+    has_more: bool
+
 Base = declarative_base()
 metadata = Base.metadata
 
@@ -178,29 +192,6 @@ class Zu(SQLModel, table=True):
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
     )
-    # geom: GeometryModel = Field(sa_column=Geometry('MULTIPOLYGON'))
-    
-#     class Config:
-#         arbitrary_types_allowed = True
-        
-# class Zu(Base):
-#     __tablename__ = 'zu'
-#     __table_args__ = (
-#         PrimaryKeyConstraint('gid', name='zu_pkey'),
-#         Index('zu_geom_idx', 'geom')
-#     )
-
-#     gid = mapped_column(Integer)
-#     cadastra2 = mapped_column(String(80))
-#     address = mapped_column(String(254))
-#     hasvalid5 = mapped_column(String(80))
-#     hascadas6 = mapped_column(String(80))
-#     isdraft = mapped_column(String(80))
-#     ownershi8 = mapped_column(Numeric)
-#     is_stroy = mapped_column(String(80))
-#     is_nonca20 = mapped_column(Numeric)
-#     area = mapped_column(Numeric)
-#     geom = mapped_column(Geometry('MULTIPOLYGON'))
 
 class CommentCreate(SQLModel):
     text: str 
@@ -216,21 +207,6 @@ class CommentPublic(CommentCreate):
 class Comment(CommentPublic, table=True):
     zu: Zu = Relationship(back_populates="comments")
     owner: User = Relationship(back_populates="comments")
-    
-from typing import Generic, TypeVar, List, Optional
-from pydantic.generics import GenericModel
-from fastapi import FastAPI, Depends
-from sqlmodel import SQLModel, Field, Session, create_engine, select
-
-# Define a type variable for the generic model
-T = TypeVar("T")
-
-# Define the generic response model
-class PagedResponse(GenericModel, Generic[T]):
-    # page: int
-    items: List[T]
-    has_more: bool
-
     
 class Mkd(SQLModel, table=True):
     gid: int  | None = Field(default=None, primary_key=True)
@@ -531,21 +507,35 @@ class Zouit(SQLModel, table=True):
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
     )
+    
+class Krt(SQLModel, table=True):
+    __tablename__ = 'krt'
+    gid: int | None = Field(default=None, primary_key=True)
+    name: str | None
+    type_krt: str | None
+    area_krt: Decimal
+    geom: any = Field(sa_column = Column(sa_column=Geometry('MULTIPOLYGON'))) 
+    
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+    )
            
 class ZuDetails(SQLModel):
     zu: Zu
     okrug: List[Okrug]
     mkd: List[Mkd]
-    # oozt: List[Oozt]
-    # pp_metro_allkrug: List[Pp_metro_all]
-    # ppt_all: List[Ppt_all]
-    # ppt_uds: List[Ppt_uds]
-    # spritzones: List[SpritZones]
-    # oks: List[Oks]
-    # tpz_new: List[Tpz_new]
-    # uchastrki_megevania: List[Uchastrki_megevania]
-    # uds_bridges: List[Uds_bridges]
-    # uds_roads: List[Uds_roads]
+    zouit: List[Zouit]
+    oozt: List[Oozt]
+    rayon: List[Rayon]
+    oks: List[Oks]
+    sprit: List[SpritZones]
+    krt: List[Krt]
+    pzz_tz: List[Tz_new]
+    pzz_tpz: List[Tpz_new]
+    rsp: List[Rsp]
+    bidges: List[Uds_bridges]
+    roads: List[Uds_roads]
+ 
 
     
     

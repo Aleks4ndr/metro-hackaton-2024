@@ -5,9 +5,6 @@ import { Box, Button, HStack, VStack, FormControl, FormLabel, NumberInput, Numbe
 interface SearchFormValues {
     areaFrom: number;
     areaTo: number;
-    // okrug: number[];
-    // rayon: number[];
-    // vri: string[];
 
     vri: { value: string, label: string }[];
     okrug: { value: string, label: number }[];
@@ -23,7 +20,7 @@ import MultiSelectDropdown from './MultiselectDropdown4.tsx';
 import rayonOptions from './RAYON.ts';
 import districtOptions from './DISTRICT.ts';
 import vriOptions from './VRI.ts';
-import { ZuPublic, ZuService } from "../../client";
+import { ZuService } from "../../client";
 
 // type SearchPanelProps = {
 //     onSearch: ((data: ZuPublic[]) => void);
@@ -31,10 +28,11 @@ import { ZuPublic, ZuService } from "../../client";
 
 const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps) => {
     const methods = useForm<SearchFormValues>();
-    const { handleSubmit, register, formState } = methods;
+    const { handleSubmit, register, control } = methods;
 
-    const onSubmit = (data: SearchFormValues) => {
-        onSearch(data);
+    const onSubmit = async (searchParameters: SearchFormValues) => {
+        const data = await ZuService.readItems(searchParameters);
+        onSearch(data.items);
     };
 
     // const  handleSubmit = async (e: React.FormEvent) => {
@@ -46,12 +44,11 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
 
     return (
         <FormProvider {...methods}>
-            <Box as="form" onSubmit={handleSubmit((data) => console.log(data))}>
             <VStack width="100%" spacing={4} align="center">
                 {/* <Heading size="lg" textAlign={{ base: "center", md: "left" }} pt={12}>
                     Панель поиска
                 </Heading> */}
-                <Box p={4} bg="gray.100" borderRadius="md" as="form" onSubmit={handleSubmit}>
+                <Box p={4} bg="gray.100" borderRadius="md" as="form" onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing={4} align="stretch">
                         <FormControl id="areaFrom">
                             <FormLabel>Площадь от</FormLabel>
@@ -71,6 +68,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                                 label="Округ"
                                 name="districts"
                                 options={districtOptions}
+                                control={control}
                                 // selectedOptions={formValues.districts}
                                 // onChange={(values) => handleMultiSelectChange('districts', values)}
                             />
@@ -82,6 +80,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                                 label="Район"
                                 name="rayon"
                                 options={rayonOptions}
+                                control={control}
                                 // selectedOptions={formValues.rayon}
                                 // onChange={(values) => handleMultiSelectChange('rayon', values)}
                             />
@@ -93,6 +92,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                                 label="ВРИ"
                                 name="vri"
                                 options={vriOptions}
+                                control={control}
                                 // selectedOptions={formValues.vri}
                                 // onChange={(values) => handleMultiSelectChange('vri', values)}
                             />
@@ -117,7 +117,6 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onSearch }: SearchPanelProps)
                     </VStack>
                 </Box>
             </VStack>
-        </Box>
         </FormProvider>
     );
 };

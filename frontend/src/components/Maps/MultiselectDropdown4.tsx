@@ -7,9 +7,10 @@ import {
     Select,
     StylesConfig,
     chakraComponents, 
-    ChakraStylesConfig
+    ChakraStylesConfig,
+    
   } from "chakra-react-select";
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useController, Control } from 'react-hook-form';
 import { FormControl, FormLabel, Box, Text, Checkbox } from '@chakra-ui/react';
 
 interface Option {
@@ -130,6 +131,7 @@ const customStyles = {
 
 const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({ name, label, options }) => {
     const { control } = useFormContext();
+    const { field } = useController({ name, control });
 
     const filterOption = (candidate: Option, input: string) => {
         return candidate.label.toLowerCase().includes(input.toLowerCase());
@@ -153,13 +155,15 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({ name, label, 
                         isMulti
                         options={options}
                         filterOption={filterOption}
-                        onChange={handleChange}
-                        // onChange={(selectedOptions) => field.onChange(selectedOptions)}
-                        value={selectedOptions}
+                        // onChange={handleChange}
+                        onChange={(selectedOptions) => field.onChange(selectedOptions)}
+                        // value={selectedOptions}
                         components={{ MultiValue: CustomMultiValue, Option: CustomOption }}
                         chakraStyles={customStyles}
                         placeholder="Select options"
                         closeMenuOnSelect={false}
+                        onBlur={field.onBlur}
+                        value={field.value}
 
                     />
                 )}

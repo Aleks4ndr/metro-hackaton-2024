@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import func, select, text
 
 from app.api.deps import CurrentUser, SessionDep
-from app.models import Zu, ZuDetails, Message, PagedResponse, Okrug, Mkd, Oozt, Pp_gaz, Pp_metro_all, Ppt_all, Ppt_uds, Rayon, Rsp, SpritZones, Oks, Tpz_new, Tz_new, Uchastrki_megevania, Uds_bridges, Uds_roads, Zouit
+from app.models import Zu, ZuDetails, Message, PagedResponse, Okrug, Mkd, Krt, Oozt, Pp_gaz, Pp_metro_all, Ppt_all, Ppt_uds, Rayon, Rsp, SpritZones, Oks, Tpz_new, Tz_new, Uchastrki_megevania, Uds_bridges, Uds_roads, Zouit
 from math import ceil 
 
 import uuid
@@ -141,16 +141,21 @@ def read_item(
     return ZuDetails(
         zu = zu,
         okrug = run_query("okrug", Okrug, session, id),
-        mkd = run_query("mkd", Okrug, session, id)
+        mkd = run_query("mkd", Mkd, session, id),
+        zouit = run_query("zouit", Zouit, session, id),
+        oozt = run_query("oozt", Oozt, session, id),
+        rayon = run_query("rayon", Rayon, session, id),
+        oks = run_query("oks", Oks, session, id),
+        sprit = run_query("spritzones", SpritZones, session, id),
+        krt = run_query("krt", Krt, session, id),
+        pzz_tz = run_query("tz", Tz_new, session, id),
+        pzz_tpz = run_query("tpz", Tpz_new, session, id),
+        rsp = run_query("rsp", Rsp, session, id),
+        bidges = run_query("uds_bridges", Uds_bridges, session, id),
+        roads = run_query("uds_roads", Uds_roads, session, id),
     )
         
-        
 
-    
-    query_template = "select t.* from {table} t join zu_{table} zt on t.gid = zt.{table}_gid where zt.zu_gid = :id"
-    
-    # krt_query = "select krt.* from krt join zu_krt on krt.gid = zu_rkt.krt_gid where zu_krt.zu_gid = :id"
-    krt_query = query_template.format(table = "krt")
     
     
 def run_query(table, type, session, id):

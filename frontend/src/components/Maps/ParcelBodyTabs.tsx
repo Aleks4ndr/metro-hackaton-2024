@@ -1,7 +1,10 @@
 import React from 'react';
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Box } from '@chakra-ui/react';
+import { ZuDetailsData } from './types.ts';
+import TableComponent from './TableComponent.tsx';
 
-const BodyTabs: React.FC = () => {
+
+const BodyTabs: React.FC = (zuDetails: ZuDetailsData) => {
   return (
     <Tabs>
       <TabList>
@@ -21,6 +24,7 @@ const BodyTabs: React.FC = () => {
       </TabList>
       <TabPanels>
         <TabPanel>
+          <TableComponent data={zuDetails.okrug} headers={['gid', 'name', 'label', 'address']}></TableComponent>
           <Box>
             {/* Content for Округ */}
           </Box>

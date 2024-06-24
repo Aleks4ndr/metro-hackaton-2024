@@ -2,7 +2,9 @@ import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
 
-import type { Body_login_login_access_token, Message, NewPassword, Token, UserPublic, UpdatePassword, UserCreate, UserRegister, UsersPublic, UserUpdate, UserUpdateMe, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, ZusPublic } from './models';
+import type { Body_login_login_access_token, Message, NewPassword, Token, UserPublic, 
+	UpdatePassword, UserCreate, UserRegister, UsersPublic, UserUpdate, UserUpdateMe, ItemCreate, 
+	ItemPublic, ItemsPublic, ItemUpdate, ZusPublic, ZuDetails } from './models';
 
 export type TDataLoginAccessToken = {
 	formData: Body_login_login_access_token
@@ -524,24 +526,44 @@ export class ItemsService {
 }
 
 export type TDataReadZu = {
-	areaFrom?: number,
-	areaTo?: number,
-	districts?: number[],
-	rayon?: number[],
-	vri?: string[],
-	regions?: string[],
-	usageTypes?: string[],
-	ownership?: boolean,
-	ZPO?: string[],
-	density?: number,
-	height?: number,
-	buildPercent?: number,
-	inPMT?: boolean,
-	inOOZT?: boolean,
-	inPPT?: boolean,
-	KRT?: string[],
-	usageKinds?: string[],
+	areaFrom?: number;
+    areaTo?: number;
+    vri?: { value: string, label: string }[];
+    okrug?: { value: string, label: number }[];
+    rayon?: { value: string, label: number }[];
 }
+
+const convertToQueryString = (params: TDataReadZu): string => {
+	const queryParts: string[] = [];
+  
+	if (params.areaFrom) {
+	  queryParts.push(`areaFrom=${params.areaFrom}`);
+	}
+  
+	if (params.areaTo) {
+	  queryParts.push(`areaTo=${params.areaTo}`);
+	}
+  
+	if (params.vri) {
+	  params.vri.forEach(item => {
+		queryParts.push(`vri=${item.value}`);
+	  });
+	}
+  
+	if (params.okrug) {
+	  params.okrug.forEach(item => {
+		queryParts.push(`okrug=${item.value}`);
+	  });
+	}
+  
+	if (params.rayon) {
+	  params.rayon.forEach(item => {
+		queryParts.push(`rayon=${item.value}`);
+	  });
+	}
+  
+	return queryParts.join('&');
+  };
 
 export class ZuService {
 
@@ -552,13 +574,27 @@ export class ZuService {
 	 * @throws ApiError
 	 */
 	public static readItems(data: TDataReadZu = {}): CancelablePromise<ZusPublic> {
-		// const {
-		// 	limit = 100,
-		// 	skip = 0,
-		// } = data;
+		
+
 		return __request(OpenAPI, {
 			method: 'GET',
-			url: '/api/v1/zu/',
+			url: '/api/v1/zu/?' + convertToQueryString(data),
+			// query: {
+			// 	skip, limit
+			// },
+			// body: data,
+			errors: {
+				422: `Validation Error`,
+			},
+		});
+	}
+
+	public static readZu(gid: number): CancelablePromise<ZuDetails> {
+		
+
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/api/v1/zu/' + gid,
 			// query: {
 			// 	skip, limit
 			// },
